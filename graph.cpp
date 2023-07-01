@@ -532,9 +532,14 @@ public:
         }
         return 0;
     }
-    int dijkstra_shortest_time(string src,string dest,unordered_map<string,int>& time){
+    int dijkstra_shortest_time(string src,string dest,unordered_map<string,int>& time,
+    unordered_map<string,string>& parent,int& interchange_count,bool toPrintPath,string& path_str){
         priority_queue<dij_pair,vector<dij_pair>,greater<dij_pair> > q;
-        // Vertex src_vtx = vertices[src];
+        //Set parent initialll as vertex itself
+        for(auto it:vertices){
+            parent[it.first] = it.first;
+        }
+
         for(auto it:vertices){
             time[it.first] = 1e9;
             if(it.first==src){
@@ -550,9 +555,16 @@ public:
             Vertex node = vertices[temp];
             int time_temp = q.top().first;
             q.pop();
-            if(temp==dest) return time_temp;
+            if(temp==dest){
+                interchange_count = countInterchanges(parent,dest);
+                if(toPrintPath==true) {
+                    setPath(path_str,parent,dest);
+                }
+                return time_temp;
+            } 
             for(auto it:node.adj_nodes){
                 if(time[it.first] > time_temp + it.second){
+                    parent[it.first] = temp;
                     time[it.first] = time_temp+it.second;
                     dij_p.first = time[it.first];
                     dij_p.second = it.first;

@@ -9,6 +9,8 @@
 #include <cstdio>
 #include "graph.cpp"
 
+using namespace std;
+
 std::string charArrayToString(const char *charArray)
 {
     std::string str(charArray);
@@ -25,9 +27,10 @@ string tranformToLower(string s)
     transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
-void printInBox(string& text) {
+void printInBox(string &text)
+{
     cout << "\n*****************************PATH IS******************************\n";
-    cout<<text<<endl;
+    cout << text << endl;
     cout << "\n******************************************************************\n";
 }
 
@@ -36,6 +39,13 @@ void printMinStation(string src, string dest, int min_dist, int interchanges)
     cout << "\n***********************************************************\n";
     cout << "Minimum cost from " << tranformToUpper(src) << " ==> " << tranformToUpper(dest) << " is " << min_dist * 10 << endl;
     cout << "Minimum stations from " << tranformToUpper(src) << " ==> " << tranformToUpper(dest) << " is " << min_dist << endl;
+    cout << "Interchanges in this path from " << tranformToUpper(src) << " ==> " << tranformToUpper(dest) << " is " << interchanges;
+    cout << "\n***********************************************************\n";
+}
+void printMinTimeStation(string src, string dest, int min_time, int interchanges)
+{
+    cout << "\n***********************************************************\n";
+    cout << "Minimum time from " << tranformToUpper(src) << " ==> " << tranformToUpper(dest) << " is " << min_time<<" minutes"<<endl;
     cout << "Interchanges in this path from " << tranformToUpper(src) << " ==> " << tranformToUpper(dest) << " is " << interchanges;
     cout << "\n***********************************************************\n";
 }
@@ -87,7 +97,7 @@ int main()
                 int src_serial, dest_serial;
                 cout << "\nENTER SOURCE STATION SERIAL NUMBER: ";
                 cin >> src_serial;
-                cout << "ENTER DESTINATIOM STATION SERIAL NUMBER: ";
+                cout << "ENTER DESTINATION STATION SERIAL NUMBER: ";
                 cin >> dest_serial;
                 if (src_serial < 1 || dest_serial < 1 || dest_serial > 128 || src_serial > 128)
                 {
@@ -105,7 +115,7 @@ int main()
                     advance(it_dest, dest_serial - 1);
                     string path_str;
                     int min_dist = g.dijkstra_shortest_dist(it_src->first,
-                                                            it_dest->first, vis, parent, interchanges,false,path_str);
+                                                            it_dest->first, vis, parent, interchanges, false, path_str);
                     printMinStation(it_src->first, it_dest->first, min_dist, interchanges);
                 }
             }
@@ -116,7 +126,6 @@ int main()
                 src = charArrayToString(src_char);
                 src = tranformToLower(src);
 
-                // cin.ignore();
                 cout << "ENTER DESTINATION STATION NAME: ";
                 scanf(" %[^\n]", dest_char);
                 dest = charArrayToString(dest_char);
@@ -135,7 +144,7 @@ int main()
                     int interchanges;
                     string path_str;
                     int min_dist = g.dijkstra_shortest_dist(src,
-                                                            dest, vis, parent, interchanges,false,path_str);
+                                                            dest, vis, parent, interchanges, false, path_str);
                     printMinStation(src, dest, min_dist, interchanges);
                 }
             }
@@ -151,11 +160,78 @@ int main()
 
         case 3:
             // Implement logic for getting shortest time
+            cout << "\n1. TO ENTER SERIAL NO. OF STATIONS\n2.  TO ENTER NAME OF STATIONS \n3. TO ENTER CODE OF STATIONS\n";
+            cout << "ENTER YOUR CHOICE: ";
+            cin >> ch;
+            cout << "\n***********************************************************\n";
+            if (ch == 1)
+            {
+                int src_serial, dest_serial;
+                cout << "\nENTER SOURCE STATION SERIAL NUMBER: ";
+                cin >> src_serial;
+                cout << "ENTER DESTINATION STATION SERIAL NUMBER: ";
+                cin >> dest_serial;
+                if (src_serial < 1 || dest_serial < 1 || dest_serial > 128 || src_serial > 128)
+                {
+                    cout << "INVALID CHOICE\n";
+                    break;
+                }
+                else
+                {
+                    unordered_map<string, string> parent;
+                    unordered_map<string,int> time;
+                    int interchanges;
+                    auto it_src = g.vertices.begin();
+                    advance(it_src, src_serial - 1);
+                    auto it_dest = g.vertices.begin();
+                    advance(it_dest, dest_serial - 1);
+                    string path_str;
+                    int min_time = g.dijkstra_shortest_time(it_src->first,
+                                                            it_dest->first, time, parent, interchanges, false, path_str);
+                    // printMinStation(it_src->first, it_dest->first, min_time, interchanges);
+                    printMinTimeStation(it_src->first,it_dest->first,min_time,interchanges);
+                }
+            }
+            else if (ch == 2)
+            {
+                cout << "\nENTER SOURCE STATION: ";
+                scanf(" %[^\n]", src_char);
+                src = charArrayToString(src_char);
+                src = tranformToLower(src);
 
+                cout << "ENTER DESTINATION STATION NAME: ";
+                scanf(" %[^\n]", dest_char);
+                dest = charArrayToString(dest_char);
+                dest = tranformToLower(dest);
+
+                if (!(g.containsVertex(src) && g.containsVertex(dest)))
+                {
+                    cout << src << " " << dest << endl;
+                    cout << "INVALID CHOICE\n";
+                    break;
+                }
+                else
+                {
+                    unordered_map<string, string> parent;
+                    unordered_map<string,int> time;
+                    int interchanges;
+                    string path_str;
+                    int min_time = g.dijkstra_shortest_time(src,
+                                                            dest, time, parent, interchanges, false, path_str);
+                    printMinTimeStation(src, dest, min_time, interchanges);
+                }
+            }
+            else if (ch == 3)
+            {
+            }
+            else
+            {
+                cout << "INVALID CHOICE\n";
+                break;
+            }
             break;
-
         case 4:
-            // Implement logic for getting shortest ditsnace path
+            // Implement logic for getting minimum cost path
             cout << "\n1. TO ENTER SERIAL NO. OF STATIONS\n2.  TO ENTER NAME OF STATIONS \n3. TO ENTER CODE OF STATIONS\n";
             cout << "ENTER YOUR CHOICE: ";
             // int ch;
@@ -184,7 +260,7 @@ int main()
                     advance(it_dest, dest_serial - 1);
                     string path_str;
                     int min_dist = g.dijkstra_shortest_dist(it_src->first,
-                                                            it_dest->first, vis, parent, interchanges,true,path_str);
+                                                            it_dest->first, vis, parent, interchanges, true, path_str);
 
                     printMinStation(it_src->first, it_dest->first, min_dist, interchanges);
                     printInBox(path_str);
@@ -216,10 +292,86 @@ int main()
                     unordered_set<string> vis;
                     int interchanges;
                     string path_str;
-                    int min_dist = g.dijkstra_shortest_dist(src,dest, vis, parent, interchanges,true,path_str);
+                    int min_dist = g.dijkstra_shortest_dist(src, dest, vis, parent, interchanges, true, path_str);
                     printMinStation(src, dest, min_dist, interchanges);
                     printInBox(path_str);
-                    // cout<<"PATH IS : \n"<<path_str<<endl;
+                }
+            }
+            else if (ch == 3)
+            {
+            }
+            else
+            {
+                cout << "INVALID CHOICE\n";
+                break;
+            }
+
+
+            break;
+
+        case 5:
+            // Implement logic for getting shortest time path 
+            cout << "\n1. TO ENTER SERIAL NO. OF STATIONS\n2.  TO ENTER NAME OF STATIONS \n3. TO ENTER CODE OF STATIONS\n";
+            cout << "ENTER YOUR CHOICE: ";
+            cin >> ch;
+            cout << "\n***********************************************************\n";
+            if (ch == 1)
+            {
+                int src_serial, dest_serial;
+                cout << "\nENTER SOURCE STATION SERIAL NUMBER: ";
+                cin >> src_serial;
+                cout << "ENTER DESTINATION STATION SERIAL NUMBER: ";
+                cin >> dest_serial;
+                if (src_serial < 1 || dest_serial < 1 || dest_serial > 128 || src_serial > 128)
+                {
+                    cout << "INVALID CHOICE\n";
+                    break;
+                }
+                else
+                {
+                    unordered_map<string, string> parent;
+                    unordered_map<string,int> time;
+                    int interchanges;
+                    auto it_src = g.vertices.begin();
+                    advance(it_src, src_serial - 1);
+                    auto it_dest = g.vertices.begin();
+                    advance(it_dest, dest_serial - 1);
+                    string path_str;
+                    int min_time = g.dijkstra_shortest_time(it_src->first,
+                                                            it_dest->first, time, parent, interchanges, true, path_str);
+                     
+                    printMinTimeStation(it_src->first,it_dest->first,min_time,interchanges);
+                    printInBox(path_str);
+                }
+            }
+            else if (ch == 2)
+            {
+                cout << "\nENTER SOURCE STATION: ";
+                scanf(" %[^\n]", src_char);
+                src = charArrayToString(src_char);
+                src = tranformToLower(src);
+
+                cout << "ENTER DESTINATION STATION NAME: ";
+                scanf(" %[^\n]", dest_char);
+                dest = charArrayToString(dest_char);
+                dest = tranformToLower(dest);
+
+                if (!(g.containsVertex(src) && g.containsVertex(dest)))
+                {
+                    cout << src << " " << dest << endl;
+                    cout << "INVALID CHOICE\n";
+                    break;
+                }
+                else
+                {
+                    unordered_map<string, string> parent;
+                    unordered_map<string,int> time;
+                    int interchanges;
+                    string path_str;
+                    int min_time = g.dijkstra_shortest_time(src,
+                                                            dest, time, parent, interchanges, true, path_str);
+                    printMinTimeStation(src, dest, min_time, interchanges);
+                    printInBox(path_str);
                 }
             }
             else if (ch == 3)
@@ -231,12 +383,7 @@ int main()
                 break;
             }
             break;
-
-            break;
-
-        case 5:
-            // Implement logic for getting shortest path (distance wise)
-            break;
+            
         default:
             std::cout << "Invalid choice. Please try again.\n";
             break;
